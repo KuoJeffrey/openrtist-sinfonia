@@ -14,9 +14,12 @@
 
 package edu.cmu.cs.openrtist;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu;
@@ -63,15 +66,18 @@ public class ServerListActivity extends AppCompatActivity  {
         return true;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        AlertDialog.Builder builder;
+        Intent intent;
         switch (id) {
             case R.id.about:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder = new AlertDialog.Builder(this);
 
                 builder.setMessage(this.getString(R.string.about_message, BuildConfig.VERSION_NAME))
                         .setTitle(R.string.about_title);
@@ -79,10 +85,23 @@ public class ServerListActivity extends AppCompatActivity  {
                 dialog.show();
                 return true;
             case R.id.settings:
-                Intent intent = new Intent(this, SettingsActivity.class);
+                intent = new Intent(this, SettingsActivity.class);
                 //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 //intent.putExtra("", faceTable);
                 this.startActivity(intent);
+                return true;
+            case R.id.find_cloudlets:
+                PackageManager packageManager = getApplicationContext().getPackageManager();
+                intent = packageManager.getLaunchIntentForPackage("com.wireguard.android.debug");
+                if (intent == null) {
+                    builder = new AlertDialog.Builder(this);
+                    builder.setMessage("Unable to launch WireGuard")
+                            .setTitle(R.string.about_title)
+                            .create()
+                            .show();
+                    return false;
+                }
+                startActivity(intent);
                 return true;
             default:
                 return false;
@@ -118,12 +137,10 @@ public class ServerListActivity extends AppCompatActivity  {
 
     }
 
-    void requestPermissionHelper(String permissions[]) {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            ActivityCompat.requestPermissions(this,
-                    permissions,
-                    MY_PERMISSIONS_REQUEST_CAMERA);
-        }
+    void requestPermissionHelper(String[] permissions) {
+        ActivityCompat.requestPermissions(this,
+                permissions,
+                MY_PERMISSIONS_REQUEST_CAMERA);
     }
 
     void requestPermission() {
