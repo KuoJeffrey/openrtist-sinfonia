@@ -16,23 +16,15 @@ package edu.cmu.cs.openrtist;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.Toast;
-import android.widget.ListView;
-import android.widget.ImageView;
 import androidx.appcompat.widget.Toolbar;
 import android.os.Bundle;
 import android.Manifest;
-import android.os.Build;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
@@ -40,13 +32,12 @@ import android.util.Log;
 import android.content.Context;
 import android.hardware.camera2.CameraManager;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import edu.cmu.cs.gabriel.Const;
-import edu.cmu.cs.gabriel.client.socket.SocketWrapper;
-import edu.cmu.cs.gabriel.serverlist.Server;
 import edu.cmu.cs.gabriel.serverlist.ServerListFragment;
+import edu.cmu.cs.sinfonia.SinfoniaActivity;
+import edu.cmu.cs.sinfonia.SinfoniaFragment;
 
 
 public class ServerListActivity extends AppCompatActivity  {
@@ -73,11 +64,10 @@ public class ServerListActivity extends AppCompatActivity  {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        AlertDialog.Builder builder;
         Intent intent;
         switch (id) {
             case R.id.about:
-                builder = new AlertDialog.Builder(this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
                 builder.setMessage(this.getString(R.string.about_message, BuildConfig.VERSION_NAME))
                         .setTitle(R.string.about_title);
@@ -91,16 +81,7 @@ public class ServerListActivity extends AppCompatActivity  {
                 this.startActivity(intent);
                 return true;
             case R.id.find_cloudlets:
-                PackageManager packageManager = getApplicationContext().getPackageManager();
-                intent = packageManager.getLaunchIntentForPackage("com.wireguard.android.debug");
-                if (intent == null) {
-                    builder = new AlertDialog.Builder(this);
-                    builder.setMessage("Unable to launch WireGuard")
-                            .setTitle(R.string.about_title)
-                            .create()
-                            .show();
-                    return false;
-                }
+                intent = new Intent(this, SinfoniaActivity.class);
                 startActivity(intent);
                 return true;
             default:
@@ -133,8 +114,14 @@ public class ServerListActivity extends AppCompatActivity  {
 
         }
         camMan = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+    }
 
-
+    @Override
+    protected void onDestroy() {
+        Intent intent = new Intent("edu.cmu.cs.sinfonia.action.STOP")
+                .setPackage(SinfoniaFragment.WIREGUARD_PACKAGE);
+        stopService(intent);
+        super.onDestroy();
     }
 
     void requestPermissionHelper(String[] permissions) {
@@ -144,7 +131,7 @@ public class ServerListActivity extends AppCompatActivity  {
     }
 
     void requestPermission() {
-        String permissions[] = {Manifest.permission.CAMERA,
+        String[] permissions = {Manifest.permission.CAMERA,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         };
         this.requestPermissionHelper(permissions);

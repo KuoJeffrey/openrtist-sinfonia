@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="find_cloudlets_menu">Find Cloudlets</string>
+    <string name="cloud_url">Cloud URL</string>
+    <string name="uuid_label">UUID</string>
+    <string name="title_activity_sinfonia">Sinfonia</string>
+    <string name="launch_text">Launch</string>
+    <string name="find_cloudlet_title">Find Cloudlet</string>
 </resources>
