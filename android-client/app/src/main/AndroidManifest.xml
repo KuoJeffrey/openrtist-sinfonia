@@ -15,7 +15,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="com.google.android.glass.permission.DEVELOPMENT" />
-    <uses-permission android:name="edu.cmu.cs.sinfonia.permission.WIREGUARD" />
 
     <application
         android:allowBackup="true"
@@ -77,6 +76,15 @@
             android:parentActivityName=".ServerListActivity"
             android:screenOrientation="sensor"
             android:theme="@style/MyGabrielMaterialTheme" />
+
+        <service
+            android:name="edu.cmu.cs.sinfonia.SinfoniaService"
+            android:permission="edu.cmu.cs.sinfonia.permission.BIND_SINFONIA_SERVICE"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="edu.cmu.cs.sinfonia.action.BIND" />
+            </intent-filter>
+        </service>
 
     </application>
 

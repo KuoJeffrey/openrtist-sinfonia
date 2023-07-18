@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,24 +26,54 @@ import edu.cmu.cs.openrtist.databinding.SinfoniaFragmentBinding;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
 public class SinfoniaFragment extends Fragment {
     public static final String WIREGUARD_PACKAGE = "com.wireguard.android.debug";
+    private static final String TAG = "OpenRTiST/SinfoniaFragment";
     private SinfoniaFragmentBinding binding;
+    private SinfoniaService sinfoniaService;
+    private boolean isServiceBound = false;
     private final static String KEY_LOCAL_UUID = "local_uuid";
     private final static String KEY_LOCAL_URL = "local_url";
-    private final static String ACTION_START = "edu.cmu.cs.sinfonia.action.START";
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-//            SinfoniaService.binder binder = iBinder;
+            Log.i(TAG, "onServiceConnected");
+            SinfoniaService.MyBinder binder = (SinfoniaService.MyBinder) iBinder;
+            sinfoniaService = binder.getService();
+            isServiceBound = true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
+            Log.i(TAG, "onServiceDisconnected");
+            sinfoniaService = null;
+            isServiceBound = false;
+        }
 
+        @Override
+        public void onBindingDied(ComponentName componentName) {
+            Log.i(TAG, "onBindingDied");
+            isServiceBound = false;
+        }
+
+        @Override
+        public void onNullBinding(ComponentName componentName) {
+            Log.i(TAG, "onNullBinding");
+            isServiceBound = false;
         }
     };
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
+        final Activity activity = requireActivity();
+        Intent intent = new Intent(activity, SinfoniaService.class)
+                .setAction(SinfoniaService.ACTION_BIND);
+        activity.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -87,6 +118,14 @@ public class SinfoniaFragment extends Fragment {
         super.onDestroyView();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (isServiceBound) {
+            requireActivity().unbindService(serviceConnection);
+        }
+    }
+
     private void onFinished() {
         // Hide the keyboard; it rarely goes away on its own.
         Activity activity = getActivity();
@@ -104,8 +143,8 @@ public class SinfoniaFragment extends Fragment {
 
     public void onLaunchClicked(View view) {
         final Activity activity = requireActivity();
-        Intent intent = new Intent(ACTION_START)
-                .setPackage(WIREGUARD_PACKAGE)
+        Intent intent = new Intent(SinfoniaService.ACTION_START)
+                .setPackage(SinfoniaService.PACKAGE_NAME)
                 .putExtra("url", binding.getTier1url())
                 .putExtra("applicationName", "openrtist")
                 .putExtra("uuid", binding.getUuid())
@@ -114,10 +153,12 @@ public class SinfoniaFragment extends Fragment {
                         new ArrayList<>(Collections.singletonList(activity.getPackageName()))
                 );
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                activity.startForegroundService(intent);
-            else
-                activity.startService(intent);
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+//                activity.startForegroundService(intent);
+//            else
+//                activity.startService(intent);
+            Log.d(TAG, String.format("onLaunchClicked: $%s", SinfoniaService.PACKAGE_NAME));
+            sinfoniaService.deploy(intent);
         } catch (Exception e) {
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setMessage(e.getMessage())
