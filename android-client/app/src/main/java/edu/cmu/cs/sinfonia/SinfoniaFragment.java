@@ -1,5 +1,7 @@
 package edu.cmu.cs.sinfonia;
 
+import static edu.cmu.cs.openrtist.ServerListActivity.sinfoniaService;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -32,46 +34,12 @@ public class SinfoniaFragment extends Fragment {
     public static final String WIREGUARD_PACKAGE = "com.wireguard.android.debug";
     private static final String TAG = "OpenRTiST/SinfoniaFragment";
     private SinfoniaFragmentBinding binding;
-    private SinfoniaService sinfoniaService;
-    private boolean isServiceBound = false;
     private final static String KEY_LOCAL_UUID = "local_uuid";
     private final static String KEY_LOCAL_URL = "local_url";
-    private final ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            Log.i(TAG, "onServiceConnected");
-            SinfoniaService.MyBinder binder = (SinfoniaService.MyBinder) iBinder;
-            sinfoniaService = binder.getService();
-            isServiceBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            Log.i(TAG, "onServiceDisconnected");
-            sinfoniaService = null;
-            isServiceBound = false;
-        }
-
-        @Override
-        public void onBindingDied(ComponentName componentName) {
-            Log.i(TAG, "onBindingDied");
-            isServiceBound = false;
-        }
-
-        @Override
-        public void onNullBinding(ComponentName componentName) {
-            Log.i(TAG, "onNullBinding");
-            isServiceBound = false;
-        }
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
-        final Activity activity = requireActivity();
-        Intent intent = new Intent(activity, SinfoniaService.class)
-                .setAction(SinfoniaService.ACTION_BIND);
-        activity.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         super.onCreate(savedInstanceState);
     }
 
@@ -116,14 +84,6 @@ public class SinfoniaFragment extends Fragment {
     public void onDestroyView() {
         binding = null;
         super.onDestroyView();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (isServiceBound) {
-            requireActivity().unbindService(serviceConnection);
-        }
     }
 
     private void onFinished() {
