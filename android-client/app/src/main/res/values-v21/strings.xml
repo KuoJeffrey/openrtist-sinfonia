@@ -6,4 +6,10 @@
     <string name="title_activity_sinfonia">Sinfonia</string>
     <string name="launch_text">Launch</string>
     <string name="find_cloudlet_title">Find Cloudlet</string>
+    <string name="backend">Backend</string>
+    <string name="launch">Launch</string>
+    <string name="backend_name">Name</string>
+    <string name="processor_label">Processor</string>
+    <string name="version_label">Version</string>
+    <string name="resource_label">Resource</string>
 </resources>

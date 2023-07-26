@@ -28,14 +28,19 @@ import edu.cmu.cs.openrtist.databinding.SinfoniaFragmentBinding;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public class SinfoniaFragment extends Fragment {
-    public static final String WIREGUARD_PACKAGE = "com.wireguard.android.debug";
     private static final String TAG = "OpenRTiST/SinfoniaFragment";
     private SinfoniaFragmentBinding binding;
+    public ArrayList<Backend> backends = new ArrayList<>();
     private final static String KEY_LOCAL_UUID = "local_uuid";
     private final static String KEY_LOCAL_URL = "local_url";
+    private final static String KEY_LOCAL_BACKENDS = "local_backends";
+
+    public SinfoniaFragment() {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,9 +69,22 @@ public class SinfoniaFragment extends Fragment {
         if (savedInstanceState != null) {
             binding.setUuid(savedInstanceState.getString(KEY_LOCAL_UUID));
             binding.setTier1url(savedInstanceState.getString(KEY_LOCAL_URL));
+            backends = savedInstanceState.getParcelableArrayList(KEY_LOCAL_BACKENDS);
         } else {
             binding.setUuid("737b5001-d27a-413f-9806-abf9bfce6746");
             binding.setTier1url("https://cmu.findcloudlet.org");
+            backends.add(new Backend(
+                    "Normal",
+                    "Intel CPU Core i9-12900",
+                    "737b5001-d27a-413f-9806-abf9bfce6746",
+                    "2.1"
+            ));
+            backends.add(new Backend(
+                    "Fast",
+                    "Nvidia GPU Geforce RTX 3090",
+                    "755e5883-0788-44da-8778-2113eddf4271",
+                    "2.1"
+            ));
         }
         super.onViewStateRestored(savedInstanceState);
     }
@@ -76,6 +94,7 @@ public class SinfoniaFragment extends Fragment {
         if (binding != null) {
             outState.putString(KEY_LOCAL_UUID, binding.getUuid());
             outState.putString(KEY_LOCAL_URL, binding.getTier1url());
+            outState.putParcelableArrayList(KEY_LOCAL_BACKENDS, backends);
         }
         super.onSaveInstanceState(outState);
     }

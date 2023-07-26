@@ -46,7 +46,8 @@
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp">
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/find_cloudlet_title"
@@ -88,49 +89,27 @@
                                 android:layout_height="wrap_content"
                                 android:imeOptions="actionNext"
                                 android:inputType="textNoSuggestions|textVisiblePassword"
-                                android:nextFocusDown="@id/uuid_label"
-                                android:nextFocusForward="@id/uuid_label"
+                                android:nextFocusDown="@id/backend_detail"
+                                android:nextFocusForward="@id/backend_detail"
                                 android:text="@={tier1url}"
                                 tools:text="https://cmu.findcloudlet.org" />
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <TextView
-                            android:id="@+id/uuid_label"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="8dp"
-                            android:labelFor="@+id/uuid_text"
-                            android:text="@string/uuid_label"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tier_one_url_layout" />
-
-                        <TextView
-                            android:id="@+id/uuid_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:contentDescription="@string/uuid_label"
-                            android:nextFocusUp="@id/tier_one_url_layout"
-                            android:text="@{uuid}"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/uuid_label"
-                            tools:text="737b5001-d27a-413f-9806-abf9bfce6746" />
-
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-<!--                <LinearLayout-->
-<!--                    android:id="@+id/detail_layout"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="8dp"-->
-<!--                    android:divider="@null"-->
-<!--                    android:orientation="vertical"-->
-<!--                    app:items="@{sinfonia.deployments}"-->
-<!--                    app:layout="@layout/sinfonia_detail"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintTop_toBottomOf="@+id/sinfonia_card"-->
-<!--                    tools:ignore="UselessLeaf" />-->
+                <LinearLayout
+                    android:id="@+id/backend_detail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:divider="@null"
+                    android:orientation="vertical"
+                    app:items="@{fragment.backends}"
+                    app:layout="@{@layout/backend_detail}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/sinfonia_card"
+                    tools:ignore="UselessLeaf" />
 
             </LinearLayout>
         </ScrollView>
