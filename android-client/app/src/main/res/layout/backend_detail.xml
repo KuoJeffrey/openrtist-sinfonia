@@ -12,6 +12,10 @@
             name="item"
             type="edu.cmu.cs.sinfonia.Backend" />
 
+        <variable
+            name="uuid"
+            type="String" />
+
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -42,6 +46,7 @@
                 android:nextFocusDown="@id/backend_name_label"
                 android:nextFocusForward="@id/backend_name_label"
                 android:text="@string/launch_text"
+                android:onClickListener="@{(view) -> fragment.onLaunchClicked(view, item)}"
                 android:theme="@style/MyGabrielMaterialTheme"
                 app:layout_constraintBaseline_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />

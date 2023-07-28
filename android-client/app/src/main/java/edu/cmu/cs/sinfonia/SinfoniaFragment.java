@@ -26,6 +26,7 @@ import com.google.android.material.button.MaterialButton;
 import edu.cmu.cs.openrtist.R;
 import edu.cmu.cs.openrtist.databinding.SinfoniaFragmentBinding;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,10 +35,7 @@ import java.util.Objects;
 public class SinfoniaFragment extends Fragment {
     private static final String TAG = "OpenRTiST/SinfoniaFragment";
     private SinfoniaFragmentBinding binding;
-    public ArrayList<Backend> backends = new ArrayList<>();
-    private final static String KEY_LOCAL_UUID = "local_uuid";
     private final static String KEY_LOCAL_URL = "local_url";
-    private final static String KEY_LOCAL_BACKENDS = "local_backends";
 
     public SinfoniaFragment() {
     }
@@ -58,49 +56,50 @@ public class SinfoniaFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        addOnClickListener(view);
+        Log.i(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
     public void onViewStateRestored(Bundle savedInstanceState) {
+        Log.i(TAG, "onViewStateRestored");
         if (binding == null) return;
         binding.setFragment(this);
         if (savedInstanceState != null) {
-            binding.setUuid(savedInstanceState.getString(KEY_LOCAL_UUID));
             binding.setTier1url(savedInstanceState.getString(KEY_LOCAL_URL));
-            backends = savedInstanceState.getParcelableArrayList(KEY_LOCAL_BACKENDS);
         } else {
-            binding.setUuid("737b5001-d27a-413f-9806-abf9bfce6746");
             binding.setTier1url("https://cmu.findcloudlet.org");
-            backends.add(new Backend(
-                    "Normal",
-                    "Intel CPU Core i9-12900",
-                    "737b5001-d27a-413f-9806-abf9bfce6746",
-                    "2.1"
-            ));
-            backends.add(new Backend(
-                    "Fast",
-                    "Nvidia GPU Geforce RTX 3090",
-                    "755e5883-0788-44da-8778-2113eddf4271",
-                    "2.1"
-            ));
         }
+        ArrayList<Backend> backends = new ArrayList<>();
+        backends.add(new Backend(
+                "Normal",
+                "Intel CPU Core i9-12900",
+                "737b5001-d27a-413f-9806-abf9bfce6746",
+                "2.1"
+        ));
+        backends.add(new Backend(
+                "Fast",
+                "Nvidia GPU Geforce RTX 3090",
+                "755e5883-0788-44da-8778-2113eddf4271",
+                "2.1"
+        ));
+        binding.setBackends(backends);
         super.onViewStateRestored(savedInstanceState);
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
+        Log.i(TAG, "onSaveInstanceState");
         if (binding != null) {
-            outState.putString(KEY_LOCAL_UUID, binding.getUuid());
             outState.putString(KEY_LOCAL_URL, binding.getTier1url());
-            outState.putParcelableArrayList(KEY_LOCAL_BACKENDS, backends);
         }
         super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onDestroyView() {
+        Log.i(TAG, "onDestroyView");
+        binding.getBackends().clear();
         binding = null;
         super.onDestroyView();
     }
@@ -120,22 +119,19 @@ public class SinfoniaFragment extends Fragment {
         getParentFragmentManager().popBackStackImmediate();
     }
 
-    public void onLaunchClicked(View view) {
+    public void onLaunchClicked(View view, Backend backend) {
+        Log.i(TAG, "onLaunchClicked");
         final Activity activity = requireActivity();
         Intent intent = new Intent(SinfoniaService.ACTION_START)
                 .setPackage(SinfoniaService.PACKAGE_NAME)
                 .putExtra("url", binding.getTier1url())
                 .putExtra("applicationName", "openrtist")
-                .putExtra("uuid", binding.getUuid())
+                .putExtra("uuid", backend.uuid.toString())
                 .putStringArrayListExtra(
                         "application",
                         new ArrayList<>(Collections.singletonList(activity.getPackageName()))
                 );
         try {
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-//                activity.startForegroundService(intent);
-//            else
-//                activity.startService(intent);
             Log.d(TAG, String.format("onLaunchClicked: $%s", SinfoniaService.PACKAGE_NAME));
             sinfoniaService.deploy(intent);
         } catch (Exception e) {
@@ -146,18 +142,5 @@ public class SinfoniaFragment extends Fragment {
                     .show();
         }
         onFinished();
-    }
-
-    private void addOnClickListener(View view) {
-        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                MaterialButton launchButton = view.findViewById(R.id.deployment_button);
-                if (launchButton != null) {
-                    launchButton.setOnClickListener(view -> onLaunchClicked(view));
-                }
-            }
-        });
     }
 }

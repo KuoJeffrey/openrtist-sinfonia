@@ -13,8 +13,8 @@
             type="String" />
 
         <variable
-            name="uuid"
-            type="String" />
+            name="backends"
+            type="java.util.ArrayList" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -61,18 +61,6 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/deployment_button"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="8dp"
-                            android:nextFocusDown="@id/tier_one_url_layout"
-                            android:nextFocusForward="@id/tier_one_url_layout"
-                            android:text="@string/launch_text"
-                            android:theme="@style/MyGabrielMaterialTheme"
-                            app:layout_constraintBaseline_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent" />
-
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tier_one_url_layout"
                             android:layout_width="0dp"
@@ -81,7 +69,7 @@
                             android:hint="@string/cloud_url"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/deployment_button">
+                            app:layout_constraintTop_toBottomOf="@+id/find_cloudlet_title">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/tier_one_url_text"
@@ -105,7 +93,8 @@
                     android:layout_marginTop="8dp"
                     android:divider="@null"
                     android:orientation="vertical"
-                    app:items="@{fragment.backends}"
+                    app:items="@{backends}"
+                    app:fragment="@{fragment}"
                     app:layout="@{@layout/backend_detail}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/sinfonia_card"
