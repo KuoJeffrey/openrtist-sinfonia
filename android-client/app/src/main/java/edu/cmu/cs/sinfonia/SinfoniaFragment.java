@@ -1,5 +1,6 @@
 package edu.cmu.cs.sinfonia;
 
+import static edu.cmu.cs.gabriel.Const.SOURCE_NAME;
 import static edu.cmu.cs.openrtist.ServerListActivity.sinfoniaService;
 
 import android.app.Activity;
@@ -125,8 +126,9 @@ public class SinfoniaFragment extends Fragment {
         Intent intent = new Intent(SinfoniaService.ACTION_START)
                 .setPackage(SinfoniaService.PACKAGE_NAME)
                 .putExtra("url", binding.getTier1url())
-                .putExtra("applicationName", "openrtist")
+                .putExtra("applicationName", SOURCE_NAME)
                 .putExtra("uuid", backend.uuid.toString())
+                .putExtra("tunnelName", SOURCE_NAME + backend.name)
                 .putStringArrayListExtra(
                         "application",
                         new ArrayList<>(Collections.singletonList(activity.getPackageName()))
