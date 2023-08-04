@@ -15,13 +15,9 @@
 package edu.cmu.cs.openrtist;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.os.IBinder;
 import android.preference.PreferenceManager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu;
@@ -41,46 +37,13 @@ import java.util.Map;
 import edu.cmu.cs.gabriel.Const;
 import edu.cmu.cs.gabriel.serverlist.ServerListFragment;
 import edu.cmu.cs.sinfonia.SinfoniaActivity;
-import edu.cmu.cs.sinfonia.SinfoniaFragment;
-import edu.cmu.cs.sinfonia.SinfoniaService;
 
 
 public class ServerListActivity extends AppCompatActivity  {
     CameraManager camMan = null;
-    public static SinfoniaService sinfoniaService;
     private SharedPreferences mSharedPreferences;
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 23;
     private static final String TAG = "OpenRTiST/ServerListActivity";
-
-    private boolean isServiceBound = false;
-    private final ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            Log.i(TAG, "onServiceConnected");
-            SinfoniaService.MyBinder binder = (SinfoniaService.MyBinder) iBinder;
-            sinfoniaService = binder.getService();
-            isServiceBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            Log.i(TAG, "onServiceDisconnected");
-            sinfoniaService = null;
-            isServiceBound = false;
-        }
-
-        @Override
-        public void onBindingDied(ComponentName componentName) {
-            Log.i(TAG, "onBindingDied");
-            isServiceBound = false;
-        }
-
-        @Override
-        public void onNullBinding(ComponentName componentName) {
-            Log.i(TAG, "onNullBinding");
-            isServiceBound = false;
-        }
-    };
 
     void loadPref(SharedPreferences sharedPreferences, String key) {
         Const.loadPref(sharedPreferences, key);
@@ -151,16 +114,6 @@ public class ServerListActivity extends AppCompatActivity  {
 
         }
         camMan = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-
-        Intent intent = new Intent(this, SinfoniaService.class)
-                .setAction(SinfoniaService.ACTION_BIND);
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (isServiceBound) unbindService(serviceConnection);
-        super.onDestroy();
     }
 
     void requestPermissionHelper(String[] permissions) {
@@ -170,7 +123,8 @@ public class ServerListActivity extends AppCompatActivity  {
     }
 
     void requestPermission() {
-        String[] permissions = {Manifest.permission.CAMERA,
+        String[] permissions = {
+                Manifest.permission.CAMERA,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         };
         this.requestPermissionHelper(permissions);

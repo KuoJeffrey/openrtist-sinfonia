@@ -1,44 +1,42 @@
 package edu.cmu.cs.sinfonia;
 
 import static edu.cmu.cs.gabriel.Const.SOURCE_NAME;
-import static edu.cmu.cs.openrtist.ServerListActivity.sinfoniaService;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.button.MaterialButton;
-
 import edu.cmu.cs.openrtist.R;
 import edu.cmu.cs.openrtist.databinding.SinfoniaFragmentBinding;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 
 public class SinfoniaFragment extends Fragment {
     private static final String TAG = "OpenRTiST/SinfoniaFragment";
+    private SinfoniaActivity mActivity;
     private SinfoniaFragmentBinding binding;
     private final static String KEY_LOCAL_URL = "local_url";
 
     public SinfoniaFragment() {
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof SinfoniaActivity) {
+            mActivity = (SinfoniaActivity) context;
+        }
     }
 
     @Override
@@ -105,13 +103,18 @@ public class SinfoniaFragment extends Fragment {
         super.onDestroyView();
     }
 
+    @Override
+    public void onDetach() {
+        mActivity = null;
+        super.onDetach();
+    }
+
     private void onFinished() {
         // Hide the keyboard; it rarely goes away on its own.
-        Activity activity = getActivity();
-        if (activity == null) return;
-        View focusedView = activity.getCurrentFocus();
+        if (mActivity == null) return;
+        View focusedView = mActivity.getCurrentFocus();
         if (focusedView != null) {
-            InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager inputManager = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.hideSoftInputFromWindow(
                     focusedView.getWindowToken(),
                     InputMethodManager.HIDE_NOT_ALWAYS
@@ -133,16 +136,7 @@ public class SinfoniaFragment extends Fragment {
                         "application",
                         new ArrayList<>(Collections.singletonList(activity.getPackageName()))
                 );
-        try {
-            Log.d(TAG, String.format("onLaunchClicked: $%s", SinfoniaService.PACKAGE_NAME));
-            sinfoniaService.deploy(intent);
-        } catch (Exception e) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-            builder.setMessage(e.getMessage())
-                    .setTitle(R.string.about_title)
-                    .create()
-                    .show();
-        }
+        mActivity.getSinfoniaService().deploy(intent);
         onFinished();
     }
 }
