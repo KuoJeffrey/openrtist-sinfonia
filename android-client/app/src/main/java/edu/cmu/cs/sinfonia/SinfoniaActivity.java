@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -63,6 +64,8 @@ public class SinfoniaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+//        requestPermissions();
+
         Intent intent = new Intent(this, SinfoniaService.class)
                 .setAction(SinfoniaService.ACTION_BIND);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
@@ -84,12 +87,22 @@ public class SinfoniaActivity extends AppCompatActivity {
         return sinfoniaService;
     }
 
-//    private void requestPermissions() {
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BIND_SINFONIA_SERVICE) != PackageManager.PERMISSION_GRANTED) {
-//            requestPermissions(
-//                    new String[] {Manifest.permission.BIND_SINFONIA_SERVICE},
-//                    REQUEST_CODE_PERMISSION
-//            );
+//    public void requestPermissions() {
+//        SinfoniaService.Companion.requestPermissions(this, REQUEST_CODE_PERMISSION);
+//    }
+//
+//    @Override
+//    public void onRequestPermissionsResult(
+//            int requestCode,
+//            @NonNull String[] permissions,
+//            @NonNull int[] grantResults
+//    ) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == REQUEST_CODE_PERMISSION) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                return;
+//            }
+//
 //        }
 //    }
 }

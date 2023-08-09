@@ -29,6 +29,8 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.button.MaterialButton;
+
 import edu.cmu.cs.openrtist.R;
 import edu.cmu.cs.openrtist.databinding.SinfoniaFragmentBinding;
 
@@ -138,6 +140,11 @@ public class SinfoniaFragment extends Fragment {
 
     public void onLaunchClicked(View view, Backend backend) {
         Log.i(TAG, "onLaunchClicked");
+
+        MaterialButton materialButton = (MaterialButton) view;
+        if (!materialButton.isEnabled()) return;
+        materialButton.setEnabled(false);
+
         final Activity activity = requireActivity();
         Intent intent = new Intent(SinfoniaService.ACTION_START)
                 .setPackage(SinfoniaService.PACKAGE_NAME)
@@ -150,6 +157,7 @@ public class SinfoniaFragment extends Fragment {
                         new ArrayList<>(Collections.singletonList(activity.getPackageName()))
                 );
         mActivity.getSinfoniaService().deploy(intent);
+        materialButton.setEnabled(true);
         onFinished();
     }
 }

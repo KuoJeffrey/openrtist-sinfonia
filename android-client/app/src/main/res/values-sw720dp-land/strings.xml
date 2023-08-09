@@ -12,4 +12,5 @@
     <string name="processor_label">Processor</string>
     <string name="version_label">Version</string>
     <string name="resource_label">Resource</string>
+    <string name="launched">Launched</string>
 </resources>
