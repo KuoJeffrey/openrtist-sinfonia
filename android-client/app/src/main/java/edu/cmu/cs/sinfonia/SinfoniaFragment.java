@@ -145,7 +145,6 @@ public class SinfoniaFragment extends Fragment {
         if (!materialButton.isEnabled()) return;
         materialButton.setEnabled(false);
 
-        final Activity activity = requireActivity();
         Intent intent = new Intent(SinfoniaService.ACTION_START)
                 .setPackage(SinfoniaService.PACKAGE_NAME)
                 .putExtra("url", binding.getTier1url())
@@ -154,7 +153,7 @@ public class SinfoniaFragment extends Fragment {
                 .putExtra("tunnelName", SOURCE_NAME + backend.name)
                 .putStringArrayListExtra(
                         "application",
-                        new ArrayList<>(Collections.singletonList(activity.getPackageName()))
+                        new ArrayList<>(Collections.singletonList(mActivity.getPackageName()))
                 );
         mActivity.getSinfoniaService().deploy(intent);
         materialButton.setEnabled(true);
